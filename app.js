@@ -3,6 +3,7 @@ import  cors from "cors"
 import  cookieParse from 'cookie-parser'
 import { config }from  'dotenv'
 import morgan from "morgan"
+import userRouts from './routes/user.Routes.js'
 config()
 
 const app = express()
@@ -22,7 +23,10 @@ app.use('/ping', function(req,res){
      res.send('/pong')
 })
 
+
+
 // routes of 3 module
+app.use('api/v1/user', userRouts)
 
 app.use('*', (req,res) => {
     res.status(404).send('OPPS!! 404 page not found ')
