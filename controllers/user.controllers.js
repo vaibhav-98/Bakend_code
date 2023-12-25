@@ -1,5 +1,5 @@
-import User from "../models/user.model"
-import AppError from "../utils/error.util"
+import User from "../models/user.model.js"
+import AppError from "../utils/error.util.js"
 
 const cookieOptions = {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
@@ -7,14 +7,15 @@ const cookieOptions = {
     secure: true,
 }
 
-const register = async (req, res) => {
-    const {fullName , email , password} = req.body;
+const register = async (req, res,next) => {                  
+    const {fullName , email , password,role} = req.body;               
 
-    if(!fullName || !email || !password){
+    if(!fullName || !email || !password || !role){                        
         return next(new AppError('All field are required ',400))
     }
+    console.log({role});
 
-    const userExists = await User.findone({ email})
+    const userExists = await User.findOne({email})
 
     if(userExists){
         return  next(new AppError('Email already Exists',400))
@@ -42,7 +43,7 @@ const register = async (req, res) => {
 
     const token = await user.generateJWTToken()
 
-    res.cookie('token', token , cookieOptions)
+     res.cookie('token', token , cookieOptions)
 
     res.status(201).json({
         success: true,
@@ -106,9 +107,15 @@ const getProfile = async (req, res ) => {
      try {
         const userId = req.body.id;
         const user = await User.findById(userId)
+
+        res.status(200).json({
+            success: true,
+            message: 'User details',
+            user
+        });
         
      } catch (error) {
-        
+        return next(new AppError('Failed to fetch profile',500))
      }
      
 }
