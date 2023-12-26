@@ -19,8 +19,6 @@ console.log({fullName, email,password,role});
         return next(new AppError('All field are required ',400))
     }
 
-
-    
     const userExists = await User.findOne({email})
 
     if(userExists){
