@@ -20,6 +20,7 @@ console.log({fullName, email,password,role});
     }
 
 
+    
     const userExists = await User.findOne({email})
 
     if(userExists){
