@@ -1,5 +1,8 @@
+
 import User from "../models/user.model.js"
 import AppError from "../utils/error.util.js"
+import cloudinary from "cloudinary"
+import fs from 'fs/promises'
 
 const cookieOptions = {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
@@ -8,12 +11,14 @@ const cookieOptions = {
 }
 
 const register = async (req, res,next) => {                  
-    const {fullName , email , password,role} = req.body;               
+    const {fullName , email , password,role } = req.body; 
+    
+console.log({fullName, email,password,role});
 
-    if(!fullName || !email || !password || !role){                        
+    if(!fullName || !email || !password || !role ){                        
         return next(new AppError('All field are required ',400))
     }
-    console.log({role});
+
 
     const userExists = await User.findOne({email})
 
@@ -27,7 +32,7 @@ const register = async (req, res,next) => {
         password,
         avatar:{
             public_id: email,
-            secure_url:" "
+            secure_url:"URL"
         }
     })
 
@@ -36,6 +41,35 @@ const register = async (req, res,next) => {
     }
     
     // TODO: File upload
+     
+    console.log("File upload > " ,JSON.stringify(req.file));
+    if(req.file) {
+     try {
+       const result =await cloudinary.v2.uploader.upload(req.file.path,{
+         folder:'lms',
+         width:250,
+         height:250,
+         gravity:'faces',
+         crop:'fill'
+       });
+ 
+       if(result){
+         user.avatar.public_id =  result.public_id;
+         user.avatar.secure_url =  result.secure_url
+ 
+         //Remove file from server
+          fs.rm(`uploads/${req.file.filename}`)
+ 
+ 
+       }
+        } catch (error) {
+             return next (
+                new AppError(error || 'File not uploaded, please try again',500)
+             )
+        }
+    }
+
+
 
     await user.save()
      
@@ -55,7 +89,7 @@ const register = async (req, res,next) => {
 
 
 //======================================================================================================
-const login = async (req,res) => {
+const login = async (req,res,next) => {
     try {
         const { email, password} = req.body;
 
@@ -63,7 +97,7 @@ const login = async (req,res) => {
         return next(new AppError('All fields are required',400))
     }
 
-    const user = await User.findone({
+    const user = await User.findOne({
         email
     }).select('+password')
 
@@ -103,22 +137,25 @@ const logout = (req,res) => {
 }
 
 
-const getProfile = async (req, res ) => {
-     try {
-        const userId = req.body.id;
-        const user = await User.findById(userId)
-
-        res.status(200).json({
-            success: true,
-            message: 'User details',
-            user
-        });
-        
-     } catch (error) {
-        return next(new AppError('Failed to fetch profile',500))
-     }
-     
-}
+const getProfile = async (req, res, next) => {
+    try {
+      const userId = req.user.id;
+      console.log(userId);
+      const user = await User.findById(userId);
+  
+      res.status(200).json({
+        success: true,
+        message: "User details",
+        user
+      });
+    } catch (error) {
+      return next(new AppError("Failed to fetch profile", 500));
+      res.status(500).json({
+        success:false,
+        message: error.message,
+      })
+    }
+  };
 
 
 export {
