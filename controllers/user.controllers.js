@@ -155,11 +155,57 @@ const getProfile = async (req, res, next) => {
       })
     }
   };
+//============================================ ( forgort-Password ) =================================
 
+const forgortPassword = async (req,res,next) => {
+      
+    const { email } = req.body;
+
+    if(!email) {
+        return next(new AppError("Email is required", 400));
+    }
+
+    const user  = await User.findOne({email})
+
+    if(!user) {
+        return next(new AppError("Email not registerd", 500));
+    }
+
+    const resetToken  = await user.generatePasswordResetToken();
+
+    await user.save(); 
+
+    const resetPasswordURL = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+    try {
+        await sendEmail (email, subject, message);
+
+        res.satus(200).json({
+            success: true,
+            message: `Reset password  token has been sent to ${email} successfully `
+        })
+    } catch (error) {
+        
+        user.forgotPasswordExpiry = undefined;
+        user.forgotPasswordToken = undefined;
+
+        await user.save();
+        return next(new AppError(error.message,500))
+    }
+
+
+}
+
+const resetPassword  =  async (req,res,next) => {
+
+
+}
 
 export {
     register,
     login,
     logout,
-    getProfile
+    getProfile,
+    forgortPassword,
+    resetPassword
 }
