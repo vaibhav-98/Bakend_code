@@ -5,7 +5,7 @@ import { config }from  'dotenv'
 import morgan from "morgan"
 import userRoutes from './routes/user.Routes.js'
 import errorMiddleware from "./middlewares/error.middleware.js"
-config()
+config() 
 
 const app = express()
 
@@ -27,7 +27,7 @@ app.use('/ping', function(req,res){
 })
 
 
-// routes of 3 module
+// routes of   3 module
 app.use('/api/v1/user', userRoutes)
 
 app.use('*', (req,res) => {
