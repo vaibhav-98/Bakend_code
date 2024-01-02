@@ -1,6 +1,63 @@
 import Course from '../models/course.model.js' 
 import AppError  from "../utils/error.util.js"
+import cloudinary from 'cloudinary'
+import fs from 'fs/promises'
 
+ 
+
+
+//================================== ( create Course ) =========================================//
+
+const createCourse = async (req, res, next) => {
+    try {
+        const { title, description, category, createdBy } = req.body;
+
+        if (!title || !description || !category || !createdBy) {
+            throw new AppError('All fields are required', 400);
+        }
+
+        const course = await Course.create({
+            title,
+            description,
+            category,
+            createdBy,
+            thumbnail: {
+                public_id: 'Dumy',
+                secure_url: 'Dumy',
+            },
+        });
+
+        if (!course) {
+            throw new AppError('Course could not be created, please try again', 400);
+        }
+
+        if (req.file) {
+            const result = await cloudinary.v2.uploader.upload(req.file.path, {
+                folder: 'lms',
+            });
+            if (result) {
+                course.thumbnail.public_id = result.public_id;
+                course.thumbnail.secure_url = result.secure_url;
+            }
+            fs.rm(`uploads/${req.file.filename}`);
+        }
+
+        await course.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Course created successfully',
+            course,
+        });
+    } catch (error) {
+        // Handle structural errors or unexpected exceptions
+        console.error('Error in createCourse:', error);
+        return next(new AppError('Internal Server Error', 500));
+    }
+};
+
+
+//================================== ( get All Course )=========================================//
     const getAllCourses = async (req,res,next) => {
         const course  = await Course.find({}).select('-lectures')
     
@@ -12,7 +69,7 @@ import AppError  from "../utils/error.util.js"
 
 }
 
-
+//====================================== ( get Lectures by  course Id ) ========================//
 const getLecturesByCourseId = async (req,res,next) => {
 
     try {
@@ -39,7 +96,28 @@ const getLecturesByCourseId = async (req,res,next) => {
 
 }
 
+//====================================== ( update Course ) =====================================//
+
+const  updateCourse = async (req,res,next) => {
+       
+
+
+}
+
+
+//===================================== ( Delete Course ) ======================================//
+
+const removeCourse = async (req,res,next) => {
+
+
+
+
+}
+
 export {
+    createCourse,
     getAllCourses,
-    getLecturesByCourseId
+    getLecturesByCourseId,
+    updateCourse,
+    removeCourse
 }
