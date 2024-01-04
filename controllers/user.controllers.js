@@ -12,6 +12,7 @@ const cookieOptions = {
     secure: true,
 }
 
+//=================================== ( register ) =================================//
 const register = async (req, res,next) => {                  
     const {fullName , email , password,role } = req.body; 
     
@@ -89,7 +90,7 @@ console.log({fullName, email,password,role});
 };
 
 
-//======================================================================================================
+//===================================== (login) =================================================================//
 const login = async (req,res,next) => {
     try {
         const { email, password} = req.body;
@@ -123,6 +124,7 @@ const login = async (req,res,next) => {
 
 }
 
+//================================== (logout) =============================================//
 const logout = (req,res) => {
      res.cookie('token', null, {
         secure: true,
@@ -137,7 +139,7 @@ const logout = (req,res) => {
 
 }
 
-
+//============================================= (getProfille) =========================================//
 const getProfile = async (req, res, next) => {
     try {
       const userId = req.user.id;
@@ -203,7 +205,7 @@ const forgortPassword = async (req,res,next) => {
 
 
 }
-//=======================================================
+//============================================ (resetPassword) ============================================//
 const resetPassword  =  async (req,res,next) => {
     
     const { resetToken } = req.params;
@@ -247,7 +249,7 @@ const resetPassword  =  async (req,res,next) => {
 
 }
 
-//=========================================== ( change-Password )========================================
+//=========================================== ( change-Password )========================================//
 
 const changePassword = async (req,res,next) => {
     const { oldPassword , newPassword} = req.body;
@@ -283,7 +285,7 @@ const changePassword = async (req,res,next) => {
 
 }
 
-//=================================== ( update Profile)  ============================================
+//=================================== ( update Profile)  ============================================//
 
 const updateUser = async (req,res,next) => {
 
