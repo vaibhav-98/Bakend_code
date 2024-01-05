@@ -99,7 +99,34 @@ const getLecturesByCourseId = async (req,res,next) => {
 //====================================== ( update Course ) =====================================//
 
 const  updateCourse = async (req,res,next) => {
-       
+       try {
+          const { id } = req.params;
+          const course = await Course.findByIdAndUpdate(
+            id,
+            {
+                $set: req.body
+            },
+            {
+                runValidators: true
+            }
+          );
+
+          if(!course) {
+            return next(
+                new AppError('Course with given id does not exist', 500)
+            )
+          }
+
+          res.status(200).json({
+            success:true,
+            message: 'Course updated successfully',
+            course
+          })
+       } catch (error) {
+        return next(
+            new AppError(error.message, 500)
+        )
+       }
 
 
 }
@@ -109,8 +136,77 @@ const  updateCourse = async (req,res,next) => {
 
 const removeCourse = async (req,res,next) => {
 
+  try {
+    const { id } = req.params;
+    const course = await Course.findById(id);
+    
+    if(!course) {
+        return next(
+            new AppError('Course with given id does not exist', 500)
+        )
+      };
+
+      await Course.findByIdAndDelete(id)
+
+      res.status(200).json({
+        success:true,
+        message: 'Course deleted succesfully',
+
+      })
+
+  } catch (error) {
+    return next(
+        new AppError(error.message, 500)
+    )
+  }
 
 
+}
+
+const addLectureToCourseById = async (req,res,next) => {
+      const { title , description} = req.body;
+      const { id } = req.params;
+
+      if (!title || !description) {
+        throw new AppError('All fields are required', 400);
+    };
+
+    const course = await Course.findById(id)
+
+    if(!course) {
+        return next(
+            new AppError('Course with given id does not exist', 500)
+        )
+      };
+
+      const lectureData = {
+         title,
+         description,
+         lecture: {}
+      }
+
+      if (req.file) {
+        const result = await cloudinary.v2.uploader.upload(req.file.path, {
+            folder: 'lms',
+        });
+        if (result) {
+            lectureData.lecture.public_id = result.public_id;
+            lectureData.lecture.secure_url = result.secure_url;
+        }
+        fs.rm(`uploads/${req.file.filename}`);
+    }
+    
+    course.lectures.push(lectureData);
+
+    course.numberOfLectures = course.lectures.length;
+
+    await course.save();
+
+    res.status(200).json({
+        success: true,
+        message: 'Lecture succuessfully aadded to the course',
+        course,
+    })
 
 }
 
@@ -119,5 +215,6 @@ export {
     getAllCourses,
     getLecturesByCourseId,
     updateCourse,
-    removeCourse
+    removeCourse,
+    addLectureToCourseById
 }
