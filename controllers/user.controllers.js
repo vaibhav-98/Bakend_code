@@ -285,7 +285,7 @@ const changePassword = async (req,res,next) => {
 
 }
 
-//=================================== ( update Profile)  ============================================//
+//=================================== ( update Profile )  ============================================//
 
 const updateUser = async (req,res,next) => {
 
