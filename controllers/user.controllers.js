@@ -159,7 +159,7 @@ const getProfile = async (req, res, next) => {
       })
     }
   };
-//============================================ ( forgort-Password ) =================================
+//============================================ ( forgort-Password ) ==================================
 
 const forgortPassword = async (req,res,next) => {
       
