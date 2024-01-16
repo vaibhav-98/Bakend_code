@@ -5,6 +5,7 @@ import { config }from  'dotenv'
 import morgan from "morgan"
 import userRoutes from './routes/user.Routes.js'
 import courseRoutes from './routes/course.routes.js'
+import paymentRoutes from './routes/payment.routes.js'
 import errorMiddleware from "./middlewares/error.middleware.js"
 config() 
 
@@ -31,6 +32,7 @@ app.use('/ping', function(req,res){
 // routes of   3 module
 app.use('/api/v1/user', userRoutes)
 app.use('/api/v1/courses', courseRoutes)
+app.use('/api/v1/payment', paymentRoutes)
 
 app.use('*', (req,res) => {
     res.status(404).send('OPPS!! 404 page not found ')
