@@ -2,6 +2,7 @@ import  razorpay  from "../server.js";
 import AppError from "../utils/error.util.js";
 import User from "../models/user.model.js"
 import Payment from "../models/payment.mode.js";
+//======================================================================================================//
 
 export const getRazorpayApiKey = async (req,res,next) => {
     try {
@@ -19,7 +20,7 @@ export const getRazorpayApiKey = async (req,res,next) => {
 
 }
 
-
+//===============================================================================//
 export const buyScription = async (req,res,next) => {
     try {
         const { id } = req.user ;
@@ -41,8 +42,8 @@ export const buyScription = async (req,res,next) => {
         }
     
         const subscription = await razorpay.subscriptions.create({
-            plan_id:process.env.RAZORPAY_PLAN_ID,
-            customer_notify:1
+            plan_id: process.env.RAZORPAY_PLAN_ID,
+            customer_notify: 1
 
         })
     
@@ -65,6 +66,7 @@ export const buyScription = async (req,res,next) => {
     
  }
 
+ //=======================================================================================================//
 export const verifySubscription = async (req,res,next) => {
     try {
         const { id } = req.user;
@@ -113,7 +115,7 @@ export const verifySubscription = async (req,res,next) => {
     
 }
 
-
+//========================================================================================================//
 export const cancelSubscription = async (req,res,next) => {
     try{
         const { id } =  req.user ;
@@ -153,6 +155,7 @@ catch(e) {
     
 }
 
+//==============================================================================================================//
 export const allPayment = async (req,res,next) => {
      
      try {
