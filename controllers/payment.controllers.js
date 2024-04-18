@@ -46,7 +46,7 @@ export const buyScription = async (req,res,next) => {
             customer_notify: 1
 
         })
-    
+         
         user.subscription.id = subscription.id ;
         user.subscription.status = subscription.status;
     
@@ -66,7 +66,7 @@ export const buyScription = async (req,res,next) => {
     
  }
 
- //=======================================================================================================//
+ //----------------------------------- verifySubscription -----------------------------------------------//
 export const verifySubscription = async (req,res,next) => {
     try {
         const { id } = req.user;
@@ -115,7 +115,7 @@ export const verifySubscription = async (req,res,next) => {
     
 }
 
-//========================================================================================================//
+//------------------------------ cancelSubscription  -----------------------------------------------------//
 export const cancelSubscription = async (req,res,next) => {
     try{
         const { id } =  req.user ;
@@ -155,7 +155,7 @@ catch(e) {
     
 }
 
-//==============================================================================================================//
+//---------------------------- allPayment -----------------------------------------------------//
 export const allPayment = async (req,res,next) => {
      
      try {
